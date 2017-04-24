@@ -1,0 +1,73 @@
+---
+title: "Power_and_C0nfidence"
+author: "Dr K"
+date: "April 24, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exploring Test Dimensions - Power and Confidence
+
+ Emphasizes hypothesis testing  
+ Begin by assuming H0 is true  
+ Examines whether data are consistent with H0  
+ Proof by contradiction  
+ If, under H0, the data are strange or extreme, then doubts are
+cast on the null.  
+ Evidence is summarized with a single statistic which captures
+the tendency of the data.  
+ The statistic is compared to the parameter value given by H0  
+
+## We explore by creating populations with known properties, then we take samples
+## from these and see how well our tests actually perform.
+
+first we create two populations of 1000 individuals each
+
+```{r}
+pop1= rnorm(n=1000, mean=75, sd=6)
+pop2=rnorm(n=1000,mean=82, sd=6)
+plot(density(pop1),col="red")
+lines(density(pop2),col="blue")
+```
+
+we can see our populations appear different, How well can our t.test on limited sample size sort this out?
+
+we use a home-built function "call_different" to count how often a t.test of a specified size will call samples different.
+
+```{r}
+source("call_diffrnt.R")
+print(call_diffrnt(pop1,pop2,samsize = 4))
+print(call_diffrnt(pop1,pop2,samsize = 6))
+print(call_diffrnt(pop1,pop2,samsize = 12))
+print(call_diffrnt(pop1,pop2,samsize = 24))
+print(call_diffrnt(pop1,pop2,samsize = 36))
+```
+
+We see that as our sample size increased our test became better and better at sorting out if the samples came from different populations.  
+
+###What have we just observed?  
+
+In our first group of tests the populations were different -- so if the test called them different it got the answer right!  otherwise it got the answer wrong.  So as the sample size got bigger, the test made fewer and fewer mistakes.
+A mistake being made here is like letting a guilty person go free. Failure to convict a guily defendent.  The mistake is called a Type II error. The number we were printing out is called the "power" of the test and it represents the ability of the test to detect differences that do exist.  
+
+
+
+Now lets see what the test does when there really is no difference.
+
+```{r}
+source("call_diffrnt.R")
+print(call_diffrnt(pop1,pop1,samsize = 4))
+print(call_diffrnt(pop1,pop1,samsize = 6))
+print(call_diffrnt(pop1,pop1,samsize = 12))
+print(call_diffrnt(pop1,pop1,samsize = 24))
+print(call_diffrnt(pop1,pop1,samsize = 36))
+```
+
+What we are observing now is the confidence level of the test.  There was no difference between the populations from where the samples were drawn. Yet the test call the samples different around 5 percent of the time no matter the sample size. 
+
+Now --- modify this example to have population one to be normal with a mean of 30 and a standard deviaion of 10 and population 2 to be normal with a mean of 35 and a standard deviaion of 10 as well.  what sample size would you need for a power of 80%?
+
+
